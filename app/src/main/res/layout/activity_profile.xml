@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background_normal"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/app_name"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ProfileActivity">
+
+        <LinearLayout
+            android:id="@+id/profile_content_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_centerInParent="true"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Профіль Користувача"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="32dp"/>
+
+            <ImageView
+                android:id="@+id/iv_profile_pic"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/rounded_button_background"
+                android:contentDescription="Зображення профілю"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/tv_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ім'я не завантажено"
+                android:textSize="20sp"
+                android:layout_marginBottom="32dp"/>
+
+            <Button
+                android:id="@+id/btn_sign_out"
+                android:layout_width="wrap_content"
+                android:backgroundTint="#344278"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:text="Вийти з акаунта" />
+
+        </LinearLayout>
+
+        <include
+            layout="@layout/fragment_bottom_menu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

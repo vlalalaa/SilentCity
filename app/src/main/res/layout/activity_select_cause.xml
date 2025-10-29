@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background_normal"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/app_name"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Результати:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/noise_stats_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Середній: 0.0 дБ\nМакс: 0.0 дБ\nМін: 0.0 дБ"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="32dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Виберіть об’єкти, що створюють шум:"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="16dp"/>
+
+        <RadioGroup
+            android:id="@+id/cause_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp">
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/transport" android:id="@+id/radio_transport"/>
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/party" android:id="@+id/radio_party"/>
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/construction" android:id="@+id/radio_construction"/>
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/music" android:id="@+id/radio_music"/>
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/crowd" android:id="@+id/radio_crowd"/>
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/production" android:id="@+id/radio_production"/>
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/somethingelse" android:id="@+id/radio_other"/>
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/save_data_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:padding="1dp"
+            android:text="Зберегти дані"
+            android:backgroundTint="#344278"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/cancel_save_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Скасувати запис"
+            android:padding="1dp"
+            android:textColor="@color/white"
+            android:backgroundTint="#344278" />
+
+    </LinearLayout>
+</FrameLayout>

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "115638816611",
+    "firebase_url": "https://silent-city-app-default-rtdb.firebaseio.com",
+    "project_id": "silent-city-app",
+    "storage_bucket": "silent-city-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:115638816611:android:a2a3109a49d9d1eafd4d56",
+        "android_client_info": {
+          "package_name": "com.maid.silentcity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "115638816611-slcbc8nvkptnpse7lkpr9t2m0pdkoi7q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.maid.silentcity",
+            "certificate_hash": "3b65a4588f3b234f4d7aa53b44230b465ab614f3"
+          }
+        },
+        {
+          "client_id": "115638816611-ckaq2ig9pd72qnralo0atmlce20825ng.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfKD-fqwmYyxw-3e5zd7-uEgwugFEzr6s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "115638816611-ckaq2ig9pd72qnralo0atmlce20825ng.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

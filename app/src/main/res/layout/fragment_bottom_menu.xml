@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_gravity="bottom"
+    android:paddingStart="20dp"  android:paddingEnd="20dp"    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:background="@drawable/bottom_menu_background"
+    android:elevation="8dp">
+
+    <FrameLayout
+        android:id="@+id/btnHomeContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true">
+
+        <View
+            android:id="@+id/navHomeItem"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_home_not_active"
+            android:foreground="@drawable/ic_home" /> </FrameLayout>
+
+    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+
+    <FrameLayout
+        android:id="@+id/btnStatisticsContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true">
+
+        <View
+            android:id="@+id/navStatisticsItem"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_statistic_not_active"
+            android:foreground="@drawable/ic_statistic" /> </FrameLayout>
+
+    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+
+    <FrameLayout
+        android:id="@+id/btnProfileContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true">
+
+        <View
+            android:id="@+id/navProfileItem"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_profile_not_active"
+            android:foreground="@drawable/ic_profile" /> </FrameLayout>
+</LinearLayout>

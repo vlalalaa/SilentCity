@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background_normal"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/app_name"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/status_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Здійснюється визначення шуму"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/timer_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Час: 0 с / 10 с"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/db_level_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Поточний рівень: - дБ"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="64dp"/>
+
+        <View
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:background="@drawable/noise_wave_placeholder"
+            android:layout_marginBottom="64dp"/>
+
+        <Button
+            android:id="@+id/cancel_record_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Скасувати запис"
+            android:padding="16dp"
+            android:textColor="@color/white"
+            android:backgroundTint="#344278"/>
+    </LinearLayout>
+</FrameLayout>
