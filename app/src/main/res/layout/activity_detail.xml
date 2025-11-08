@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".DetailActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_detail_timestamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="25 Жовтня 2025, 14:30"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:paddingBottom="50dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/tv_detail_avg_noise"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Середній рівень шуму:65.5 дБ"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:paddingBottom="16dp" />
+
+        <TextView
+            android:id="@+id/tv_detail_max_noise"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Максимальний рівень шуму:78.9 дБ"
+            android:textSize="16sp"
+            android:paddingBottom="16dp"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/tv_detail_min_noise"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Мінімальний рівень шуму: 45.1 дБ"
+            android:textSize="16sp"
+            android:paddingBottom="16dp"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/tv_detail_cause"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Причина: Транспорт"
+            android:textSize="16sp"
+            android:paddingBottom="16dp"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/tv_detail_coordinates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Координати: 50.4501, 30.5234"
+            android:textSize="16sp"
+            android:paddingBottom="16dp"
+            android:textColor="@color/black"/>
+
+
+    </LinearLayout>
+</ScrollView>

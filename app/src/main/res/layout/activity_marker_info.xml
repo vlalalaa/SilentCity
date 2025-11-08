@@ -82,6 +82,16 @@
                 android:textSize="18sp"
                 android:layout_marginBottom="64dp"/>
 
+            <Button
+                android:id="@+id/btn_delete_marker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Видалити мітку"
+                android:layout_marginTop="32dp"
+                android:backgroundTint="#F44336"
+                android:textColor="@android:color/white"
+                android:visibility="gone"/>
+
         </LinearLayout>
 
     </LinearLayout>

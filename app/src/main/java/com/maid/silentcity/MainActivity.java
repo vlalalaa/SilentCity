@@ -11,19 +11,28 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.location.Location; // NEW
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView; // NEW
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.location.FusedLocationProviderClient; // NEW
+import com.google.android.gms.location.LocationServices; // NEW
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -36,6 +45,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
@@ -45,6 +56,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ActivityResultLauncher<Intent> noiseRecordingLauncher;
     private static final String TAG = "MainActivity";
 
+    // --- NEW: ПОЛЯ ДЛЯ ГЕОЛОКАЦІЇ ТА ПОРАДИ ---
+    private FusedLocationProviderClient fusedLocationClient;
+    private TextView noiseAdviceTextView;
+    private static final double ADVICE_RADIUS_METERS = 10.0;
+    private Location lastKnownLocation;
+    // --- КІНЕЦЬ NEW ПОЛІВ ---
+
     // --- ПОЛЯ FIREBASE ---
     private DatabaseReference noiseEntriesRef;
     private FirebaseAuth mAuth;
@@ -52,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // Прослуховувач стану автентифікації
     private FirebaseAuth.AuthStateListener mAuthListener;
+
+    // NEW: Код запиту для відстеження видалення мітки
+    private static final int DELETE_REQUEST_CODE = 101;
 
 
     @Override
@@ -62,6 +83,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Silent city");
         }
+
+        // NEW: Ініціалізація полів
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        noiseAdviceTextView = findViewById(R.id.noise_advice_textview);
 
         mAuth = FirebaseAuth.getInstance();
         initializeFirebase();
@@ -95,6 +120,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // Тільки тут безпечно завантажувати мітки
                     if (mMap != null) {
                         loadNoiseMarkers();
+                        // NEW: Після завантаження міток, отримуємо локацію та пораду
+                        getLastLocationAndGetAdvice();
                     } else {
                         // Якщо карта ще не готова, loadNoiseMarkers() буде викликано з onMapReady()
                     }
@@ -105,6 +132,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (mMap != null) {
                         mMap.clear();
                     }
+                    // NEW: Оновлення поради при виході
+                    noiseAdviceTextView.setText("Будь ласка, увійдіть, щоб отримати пораду щодо шуму.");
                 }
             }
         };
@@ -145,6 +174,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                             // ЗБЕРЕЖЕННЯ У FIREBASE
                             saveNoiseEntryToFirebase(cause, avgNoise, maxNoise, minNoise, lat, lon, timestamp, authorEmail);
+
+                            // NEW: Оновлення поради після додавання нових даних
+                            getLastLocationAndGetAdvice();
 
                         } else {
                             Toast.makeText(this, "Помилка: не вдалося отримати координати. Мітку не додано.", Toast.LENGTH_LONG).show();
@@ -202,21 +234,76 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (mMap != null) {
             LatLng position = new LatLng(entry.getLatitude(), entry.getLongitude());
 
-            // Складання рядка snippet для передачі всіх даних (включаючи email) у MarkerInfoActivity
+            // ... (Ваш код формування markerSnippetData залишається без змін) ...
             String markerSnippetData = String.format(Locale.US, "%s|%s|%s|%s|%.6f|%.6f|%d|%s",
                     entry.getCause(), entry.getAvgNoise(), entry.getMaxNoise(), entry.getMinNoise(),
                     position.latitude, position.longitude, entry.getTimestamp(), entry.getAuthorEmail());
 
-            Marker marker = mMap.addMarker(new MarkerOptions()
+            // --- НОВА ЛОГІКА: ВИЗНАЧЕННЯ КОЛЬОРУ ТА РОЗМІРУ МАРКЕРА ---
+            BitmapDescriptor icon = null;
+            try {
+                // 1. Очищуємо рядок шуму, видаляючи все, крім цифр, коми та крапки
+                String avgNoiseString = entry.getAvgNoise()
+                        .replaceAll("[^0-9.,]", "")
+                        .trim();
+
+                // 2. Замінюємо кому на крапку (стандартний десятковий роздільник для Java/Locale.US)
+                avgNoiseString = avgNoiseString.replace(',', '.');
+
+                // 3. Намагаємося перетворити очищений рядок на число
+                double avgNoise = Double.parseDouble(avgNoiseString);
+
+                if (avgNoise >= 0 && avgNoise <= 45) {
+                    icon = getMarkerIconFromDrawable(R.drawable.marker_green_small);
+                } else if (avgNoise > 45 && avgNoise <= 75) {
+                    icon = getMarkerIconFromDrawable(R.drawable.marker_orange_medium);
+                } else if (avgNoise > 75) {
+                    icon = getMarkerIconFromDrawable(R.drawable.marker_red_large);
+                } else {
+                    // Використовуємо стандартний маркер для від'ємних або нульових значень
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+                }
+            } catch (NumberFormatException e) {
+                // Цей блок спрацює, якщо навіть очищений рядок не є числом (наприклад, порожній рядок)
+                Log.e(TAG, "Помилка парсингу рівня шуму після очищення: " + entry.getAvgNoise(), e);
+                // Примусово використовуємо стандартний маркер
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+            }
+            // --- КІНЕЦЬ НОВОЇ ЛОГІКИ ---
+
+            MarkerOptions markerOptions = new MarkerOptions()
                     .position(position)
                     .title("Шум: " + entry.getAvgNoise() + " дБ")
-                    .snippet(markerSnippetData));
+                    .snippet(markerSnippetData);
 
-            // Встановлюємо тег для ідентифікації мітки
+            if (icon != null) {
+                markerOptions.icon(icon); // Встановлюємо динамічну іконку
+            }
+
+            Marker marker = mMap.addMarker(markerOptions);
+
             if (marker != null) {
-                marker.setTag("noise_data");
+                // NEW: Використовуємо ключ Firebase як Marker Tag
+                marker.setTag(entry.getFirebaseKey());
             }
         }
+    }
+
+    // --- НОВИЙ ДОПОМІЖНИЙ МЕТОД: Конвертація Drawable у BitmapDescriptor ---
+    private BitmapDescriptor getMarkerIconFromDrawable(int drawableResId) {
+        Drawable drawable = ContextCompat.getDrawable(this, drawableResId);
+        if (drawable != null) {
+            // Отримуємо розміри drawable (які ми встановили в XML)
+            int width = drawable.getIntrinsicWidth();
+            int height = drawable.getIntrinsicHeight();
+
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+            return BitmapDescriptorFactory.fromBitmap(bitmap);
+        }
+        return null;
     }
 
     // Завантаження всіх міток із Firebase
@@ -235,9 +322,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 for (DataSnapshot postSnapshot: snapshot.getChildren()) {
                     NoiseEntry entry = postSnapshot.getValue(NoiseEntry.class);
                     if (entry != null) {
+                        // NEW: Отримуємо ключ і встановлюємо його в об'єкт
+                        entry.setFirebaseKey(postSnapshot.getKey());
                         addNoiseMarker(entry);
                     }
                 }
+
+                // NEW: Оновлення поради після завантаження даних
+                getLastLocationAndGetAdvice();
             }
 
             @Override
@@ -245,6 +337,133 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Log.e(TAG, "Помилка завантаження даних: " + error.getMessage());
                 // Якщо тут з'явиться "Permission denied", це вказує на проблему з Rules або SHA-1
                 Toast.makeText(MainActivity.this, "Помилка завантаження даних: " + error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    // --- NEW: ЛОГІКА ПОРАД ЩОДО ШУМУ ---
+
+    // Перетворення NoiseEntry.getAvgNoise() на число
+    private double parseNoiseLevel(String noiseString) {
+        try {
+            String cleanedString = noiseString
+                    .replaceAll("[^0-9.,]", "")
+                    .trim()
+                    .replace(',', '.'); // Заміна коми на крапку
+
+            return Double.parseDouble(cleanedString);
+        } catch (Exception e) {
+            Log.e(TAG, "Помилка парсингу рівня шуму: " + noiseString, e);
+            return -1.0; // Повертаємо від'ємне число, якщо парсинг не вдався
+        }
+    }
+
+    private void getLastLocationAndGetAdvice() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Якщо дозволу немає, просимо його. Порада буде отримана в onRequestPermissionsResult.
+            checkLocationPermission();
+            noiseAdviceTextView.setText("Дозвольте доступ до геолокації, щоб отримати пораду.");
+            return;
+        }
+
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, location -> {
+                    if (location != null) {
+                        lastKnownLocation = location;
+                        getNoiseAdvice(location);
+                    } else {
+                        noiseAdviceTextView.setText("Не вдалося визначити ваше розташування. Спробуйте пізніше.");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Помилка отримання локації: " + e.getMessage());
+                    noiseAdviceTextView.setText("Помилка доступу до геолокації.");
+                });
+    }
+
+    private void getNoiseAdvice(Location currentLocation) {
+        // Оновлюємо текст-заглушку, поки йде запит до Firebase
+        noiseAdviceTextView.setText("Аналізую дані в радіусі " + (int)ADVICE_RADIUS_METERS + " метрів...");
+
+        noiseEntriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int greenCount = 0; // <= 45 дБ
+                int orangeCount = 0; // 45 < дБ <= 75 дБ
+                int redCount = 0; // > 75 дБ
+                int totalCount = 0;
+
+                // 1. Збираємо мітки в радіусі 10 метрів
+                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                    NoiseEntry entry = postSnapshot.getValue(NoiseEntry.class);
+                    if (entry != null) {
+
+                        Location entryLocation = new Location("");
+                        entryLocation.setLatitude(entry.getLatitude());
+                        entryLocation.setLongitude(entry.getLongitude());
+
+                        float distance = currentLocation.distanceTo(entryLocation);
+
+                        if (distance <= ADVICE_RADIUS_METERS) {
+                            totalCount++;
+                            double avgNoise = parseNoiseLevel(entry.getAvgNoise());
+
+                            if (avgNoise > 0) {
+                                if (avgNoise <= 45) {
+                                    greenCount++;
+                                } else if (avgNoise <= 75) {
+                                    orangeCount++;
+                                } else { // > 75
+                                    redCount++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 2. Визначаємо пораду
+                String advice;
+
+                if (totalCount < 2) {
+                    // Менше 2 міток
+                    advice = "Нерозвинена зона. Карта шуму в цьому районі майже порожня. Ваші дані є важливими!";
+                } else {
+                    int maxCount = Math.max(greenCount, Math.max(orangeCount, redCount));
+
+                    // Перевіряємо, чи є два або більше лічильників, що дорівнюють максимальному
+                    // Наприклад: (зелений=2, помаранчевий=2, червоний=1) -> maxCount=2, isTie=true
+                    // Наприклад: (зелений=1, помаранчевий=1, червоний=1) -> maxCount=1, isTie=true
+                    boolean isTie = (greenCount == maxCount && greenCount > 0 ? 1 : 0) +
+                            (orangeCount == maxCount && orangeCount > 0 ? 1 : 0) +
+                            (redCount == maxCount && redCount > 0 ? 1 : 0) >= 2;
+
+                    if (isTie) {
+                        // Якщо кількість найбільш поширених міток однакова (наприклад, 2 зелених і 2 помаранчевих)
+                        advice = "Змінна атмосфера. Цей район непередбачуваний: тут буває і тихо, і небезпечно гучно. Будьте уважні!";
+                    } else if (greenCount == maxCount) {
+                        // Найбільше зелених міток
+                        advice = "Вітаємо! Ви у зоні акустичного комфорту. Ваш слух у безпеці, насолоджуйтесь тишею! 🟢";
+                    } else if (orangeCount == maxCount) {
+                        // Найбільше помаранчевих міток
+                        advice = "Обережно, помірний шум. Ви в галасливому куточку міста. Варто потурбуватися про захист вух. 🟠";
+                    } else if (redCount == maxCount) {
+                        // Найбільше червоних міток
+                        advice = "Критичне шумове забруднення! 🔴 Цей рівень є небезпечним. Захистіть свій слух або змініть місцезнаходження.";
+                    } else {
+                        // Запасний варіант (не має відбутися, якщо дані коректні)
+                        advice = "Аналіз завершено. Знайдено міток: " + totalCount + ".";
+                    }
+                }
+
+                // 3. Відображаємо пораду
+                noiseAdviceTextView.setText(advice);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Помилка запиту даних для поради: " + error.getMessage());
+                noiseAdviceTextView.setText("Помилка завантаження даних для поради.");
             }
         });
     }
@@ -278,7 +497,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
-        if (marker.getTag() != null && marker.getTag().equals("noise_data")) {
+        // NEW: Отримуємо ключ Firebase з Tag
+        String firebaseKey = (String) marker.getTag();
+
+        // Перевіряємо, чи має маркер ключ
+        if (firebaseKey != null && !firebaseKey.isEmpty()) {
             String snippet = marker.getSnippet();
             if (snippet != null) {
                 String[] data = snippet.split("\\|");
@@ -294,7 +517,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         intent.putExtra("LONGITUDE", Double.parseDouble(data[5]));
                         intent.putExtra("TIMESTAMP", Long.parseLong(data[6]));
                         intent.putExtra("AUTHOR_EMAIL", data[7]);
-                        startActivity(intent);
+
+                        // NEW: Передача ключа Firebase
+                        intent.putExtra("FIREBASE_KEY", firebaseKey);
+
+                        // NEW: Запуск Activity з очікуванням результату
+                        startActivityForResult(intent, DELETE_REQUEST_CODE);
                         return true;
                     } catch (NumberFormatException e) {
                         Log.e(TAG, "Помилка парсингу даних мітки: " + e.getMessage());
@@ -322,6 +550,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     LOCATION_PERMISSION_REQUEST_CODE);
         } else {
             enableMyLocation();
+            // NEW: Отримуємо пораду одразу після отримання дозволу
+            getLastLocationAndGetAdvice();
         }
     }
 
@@ -340,11 +570,52 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 enableMyLocation();
+                // NEW: Отримуємо пораду після надання дозволу
+                getLastLocationAndGetAdvice();
             } else {
                 Toast.makeText(this, "Доступ до геолокації відхилено.", Toast.LENGTH_LONG).show();
+                noiseAdviceTextView.setText("Для поради потрібен доступ до геолокації.");
             }
         }
     }
+
+    // --- NEW: Обробка результату видалення з MarkerInfoActivity ---
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == DELETE_REQUEST_CODE) {
+            // Перевіряємо, чи повернулася активність з результатом "успішно видалено"
+            if (resultCode == Activity.RESULT_OK && data != null && data.getBooleanExtra("IS_DELETED", false)) {
+
+                // Успішне видалення з Firebase.
+                // Оновлюємо карту, щоб видалена мітка зникла.
+                loadNoiseMarkers();
+
+                // NEW: Оновлення поради після видалення даних
+                getLastLocationAndGetAdvice();
+
+                // Повідомлення відображається в MarkerInfoActivity, але можна додати додаткове:
+                // Toast.makeText(this, "Мітку успішно видалено.", Toast.LENGTH_LONG).show();
+
+                // Статистика оновить дані автоматично, коли користувач відкриє StatisticsActivity.
+            } else if (resultCode == Activity.RESULT_OK) {
+                // Це означає, що MarkerInfoActivity було просто закрито (без видалення).
+                // Якщо loadNoiseMarkers() є у AuthStateListener, карта оновиться самостійно.
+            }
+        }
+
+        // ВАЖЛИВО: Логіка для noiseRecordingLauncher обробляється через registerForActivityResult
+        // і не повинна тут дублюватися, але якщо ви використовували цю функцію,
+        // вона буде виглядати приблизно так:
+        /*
+        else if (requestCode == ACTIVITY_SELECT_CAUSE_REQUEST_CODE) {
+             // ...
+        }
+        */
+    }
+    // --- END NEW: Обробка результату видалення ---
+
 
     // --- ЛОГІКА ВХОДУ ТА МЕНЮ ---
 

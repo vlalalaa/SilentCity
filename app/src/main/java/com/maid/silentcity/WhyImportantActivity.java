@@ -1,17 +1,19 @@
 package com.maid.silentcity;
 
-import androidx.appcompat.app.AppCompatActivity; // Рекомендовано, але ви можете використовувати MainActivity, якщо це єдиний робочий варіант
+import androidx.appcompat.app.AppCompatActivity; // Змінено на AppCompatActivity для кращої сумісності
 
 import android.annotation.SuppressLint;
+import android.os.Build; // Додано для перевірки версії API
 import android.os.Bundle;
+import android.text.Html; // Додано для роботи з HTML
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ScrollView;
+import android.widget.TextView; // Додано для роботи з TextView
 
-// ПРИМІТКА: Розширте клас, який ви використовуєте в InstructionsActivity (ймовірно, MainActivity або AppCompatActivity)
-public class WhyImportantActivity extends MainActivity { // Замініть на AppCompatActivity, якщо вона у вас працює
+public class WhyImportantActivity extends AppCompatActivity { // Змінено на AppCompatActivity
 
     private ScrollView scrollView;
     private ImageButton btnScrollToTop;
@@ -20,17 +22,25 @@ public class WhyImportantActivity extends MainActivity { // Замініть н�
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Завантажуємо НОВИЙ макет
         setContentView(R.layout.activity_why_important);
 
-        // 1. Ініціалізація елементів
         scrollView = findViewById(R.id.scrollView_why_important);
         btnScrollToTop = findViewById(R.id.btnScrollToTop_why_important);
+        TextView whyImportantContent = findViewById(R.id.whyImportantContent); // Отримання TextView (новий ID)
+
+        // 1. Застосування HTML-форматування
+        String htmlText = getString(R.string.why_important_text);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            whyImportantContent.setText(Html.fromHtml(htmlText, Html.FROM_HTML_MODE_COMPACT));
+        } else {
+            whyImportantContent.setText(Html.fromHtml(htmlText));
+        }
 
         // 2. Налаштування ActionBar
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Повернутись");
+            // Використовуємо заголовок з ресурсів
+            getSupportActionBar().setTitle(getString(R.string.title_why_important));
             getSupportActionBar().setElevation(0f);
         }
 
@@ -38,7 +48,6 @@ public class WhyImportantActivity extends MainActivity { // Замініть н�
         scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
             int scrollY = scrollView.getScrollY();
 
-            // Показуємо кнопку, якщо прокрутили більше ніж на 500 пікселів
             if (scrollY > 500) {
                 if (btnScrollToTop.getVisibility() == View.GONE) {
                     btnScrollToTop.setVisibility(View.VISIBLE);
@@ -66,7 +75,7 @@ public class WhyImportantActivity extends MainActivity { // Замініть н�
         return super.onOptionsItemSelected(item);
     }
 
-    // 6. ПРИБИРАЄМО БУРГЕР-МЕНЮ (як і в InstructionsActivity)
+    // 6. Залишаємо для узгодження з InstructionsActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;

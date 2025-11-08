@@ -1,18 +1,54 @@
 <resources>
     <string name="app_name">SilentCity</string>
-    <string name="instruction_text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</string>
 
-    <string name="why_important_text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</string>
+    <!-- ЗАГОЛОВКИ СТОРІНОК -->
+    <string name="title_why_important">Чому це важливо?</string>
+    <string name="title_instruction">Інструкція з користування</string>
+
+    <!-- 1. ТЕКСТ ДЛЯ СТОРІНКИ "ЧОМУ ЦЕ ВАЖЛИВО" -->
+    <string name="why_important_text">
+        &lt;b&gt;Місія Silent City: Зробити Ваше місто тихішим.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;
+        Шум – це більше, ніж просто незручність. Це прихована екологічна загроза, яка щоденно впливає на наше &lt;b&gt;здоров\'я, продуктивність та якість життя&lt;/b&gt;. Європейське агентство з навколишнього середовища (ЄАВС) визнає шумове забруднення другим за значущістю фактором ризику для здоров\'я в Європі після забруднення повітря.&lt;br/&gt;&lt;br/&gt;
+
+        &lt;u&gt;&lt;b&gt;👂 Небезпека шуму&lt;/b&gt;&lt;/u&gt;&lt;br/&gt;
+        Тривалий вплив надмірного шуму спричиняє:&lt;br/&gt;
+        &lt;li&gt; &lt;b&gt;Серцево-судинні захворювання:&lt;/b&gt; Підвищення артеріального тиску та ризик інфарктів.&lt;/li&gt;
+        &lt;li&gt; &lt;b&gt;Проблеми зі сном:&lt;/b&gt; Порушення сну, що веде до хронічної втоми та зниження когнітивних функцій.&lt;/li&gt;
+        &lt;li&gt; &lt;b&gt;Психологічний стрес:&lt;/b&gt; Тривожність, дратівливість і зниження концентрації уваги.&lt;/li&gt;&lt;br/&gt;
+
+        &lt;u&gt;&lt;b&gt;🏙️ Ваша роль у створенні Тихих Міст&lt;/b&gt;&lt;/u&gt;&lt;br/&gt;
+        Міська влада часто не має &lt;b&gt;достовірних та актуальних даних&lt;/b&gt; про реальний рівень шуму у Вашому дворі, на Вашій вулиці чи біля Вашої школи.&lt;br/&gt; Саме тут починається місія Silent City:&lt;br/&gt;
+        &lt;li&gt; &lt;b&gt;Точні дані:&lt;/b&gt; Використовуючи Ваш смартфон, Ви перетворюєтесь на мобільну вимірювальну станцію.&lt;/li&gt;
+        &lt;li&gt; &lt;b&gt;Спільна карта:&lt;/b&gt; Ваші вимірювання створюють детальну, всесвітню карту шумового забруднення.&lt;/li&gt;
+        &lt;li&gt; &lt;b&gt;Вплив на рішення:&lt;/b&gt; Зібравши докази, ми надаємо чіткі дані владі для обґрунтування змін.&lt;/li&gt;&lt;br/&gt;
+
+        &lt;b&gt;Кожен Ваш замір – це внесок у спільне здоров\'я, спокій та більш комфортне майбутнє Вашого міста. Почніть вимірювати шум уже сьогодні!&lt;/b&gt;
+    </string>
+
+    <!-- 2. ТЕКСТ ДЛЯ СТОРІНКИ "ІНСТРУКЦІЯ З КОРИСТУВАННЯ" -->
+    <string name="instruction_text">
+        Ласкаво просимо до Silent City! Користуватися застосунком дуже просто. Ваше завдання — зафіксувати шум у той момент і в тому місці, де він Вас турбує, і повідомити причину.&lt;br/&gt;&lt;br/&gt;
+
+        &lt;u&gt;&lt;b&gt;Крок 1: Підготовка та дозволи&lt;/b&gt;&lt;/u&gt;&lt;br/&gt;
+        Для коректної роботи застосунку необхідні два ключові дозволи:&lt;br/&gt;
+        &lt;li&gt; &lt;b&gt;Доступ до мікрофона:&lt;/b&gt; Щоб вимірювати рівень шуму (дБ).&lt;/li&gt;
+        &lt;li&gt; &lt;b&gt;Доступ до геолокації (GPS):&lt;/b&gt; Щоб точно прив\'язати Ваш замір до конкретного місця.&lt;/li&gt;
+        Якщо Ви ще не надали ці дозволи, застосунок попросить Вас зробити це перед початком першого запису.&lt;br/&gt;&lt;br/&gt;
+
+        &lt;u&gt;&lt;b&gt;Крок 2: Запис шуму&lt;/b&gt;&lt;/u&gt;&lt;br/&gt;
+        На головному екрані натисніть кнопку &lt;b&gt;"Додати дані"&lt;/b&gt;.&lt;br/&gt;
+        &lt;li&gt; &lt;b&gt;Вимірювання:&lt;/b&gt; Програма автоматично вимірюватиме шум протягом &lt;b&gt;10 секунд&lt;/b&gt;.&lt;/li&gt;
+        &lt;li&gt; &lt;b&gt;Утримуйте телефон:&lt;/b&gt; Тримайте телефон у руці, спрямувавши мікрофон до джерела шуму.&lt;/li&gt;
+        &lt;li&gt; &lt;b&gt;Не торкайтесь мікрофона:&lt;/b&gt; Не закривайте мікрофон пальцями під час вимірювання.&lt;/li&gt;&lt;br/&gt;
+
+        &lt;u&gt;&lt;b&gt;Крок 3: Визначення причини&lt;/b&gt;&lt;/u&gt;&lt;br/&gt;
+        Після завершення 10-секундного вимірювання на екрані з\'явиться &lt;b&gt;статистика&lt;/b&gt; (Макс., Мін., Сер. дБ).&lt;br/&gt;
+        Також Вам буде запропоновано &lt;b&gt;обрати причину&lt;/b&gt; цього шумового забруднення (наприклад, "Транспорт", "Будівельні роботи" тощо).&lt;br/&gt;&lt;br/&gt;
+
+        &lt;u&gt;&lt;b&gt;Крок 4: Завершення&lt;/b&gt;&lt;/u&gt;&lt;br/&gt;
+        Після вибору причини, Ваш замір &lt;b&gt;автоматично надсилається&lt;/b&gt; на нашу спільну мапу.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;Дякуємо, що допомагаєте нам боротися за тишу!&lt;/b&gt;
+    </string>
 
     <string name="transport">Транспорт</string>
     <string name="party">Вечірка</string>

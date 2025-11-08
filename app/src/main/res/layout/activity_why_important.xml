@@ -24,12 +24,13 @@
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:text="Чому це важливо"
+                android:text="@string/title_why_important"
                 android:layout_gravity="center"
                 android:textColor="@android:color/black"
                 android:layout_marginBottom="20dp"/>
 
             <TextView
+                android:id="@+id/whyImportantContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/why_important_text"

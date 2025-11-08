@@ -68,13 +68,16 @@
             />
 
         <activity
-            android:name=".StatisticsActivity"
+            android:name=".StatisticActivity"
             android:exported="false"
             android:theme="@style/Theme.SilentCity" />
         <activity
             android:name=".ProfileActivity"
             android:exported="false"
             android:theme="@style/Theme.SilentCity" />
+        <activity android:name=".DetailActivity"
+            android:parentActivityName=".StatisticActivity"
+            android:theme="@style/Theme.SilentCity"/>
 
     </application>
 

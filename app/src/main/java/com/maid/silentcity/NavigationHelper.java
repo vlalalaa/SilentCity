@@ -84,7 +84,7 @@ public class NavigationHelper {
         home.setActive(currentActivity.getClass().equals(MainActivity.class), currentActivity);
 
         // Для інших класів instanceof працює коректно, оскільки вони не мають нащадків.
-        statistics.setActive(currentActivity instanceof StatisticsActivity, currentActivity);
+        statistics.setActive(currentActivity instanceof StatisticActivity, currentActivity);
         profile.setActive(currentActivity instanceof ProfileActivity, currentActivity);
 
         // 4. Обробка натискань (використовуємо контейнери FrameLayout)
@@ -96,7 +96,7 @@ public class NavigationHelper {
             btnHomeContainer.setOnClickListener(v -> startActivity(currentActivity, MainActivity.class));
         }
         if (btnStatisticsContainer != null) {
-            btnStatisticsContainer.setOnClickListener(v -> startActivity(currentActivity, StatisticsActivity.class));
+            btnStatisticsContainer.setOnClickListener(v -> startActivity(currentActivity, StatisticActivity.class));
         }
         if (btnProfileContainer != null) {
             btnProfileContainer.setOnClickListener(v -> startActivity(currentActivity, ProfileActivity.class));

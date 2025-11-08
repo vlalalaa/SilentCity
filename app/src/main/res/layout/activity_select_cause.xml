@@ -12,7 +12,7 @@
         android:scaleType="centerCrop"
         android:contentDescription="@string/app_name"/>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -39,26 +39,28 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Виберіть об’єкти, що створюють шум:"
-            android:textSize="22sp"
+            android:text="Виберіть об’єкти, що створюють шум (можна вибрати декілька):"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/black"
             android:layout_marginBottom="16dp"/>
 
-        <RadioGroup
-            android:id="@+id/cause_radio_group"
+        <LinearLayout
+            android:id="@+id/cause_checkbox_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp">
-            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/transport" android:id="@+id/radio_transport"/>
-            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/party" android:id="@+id/radio_party"/>
-            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/construction" android:id="@+id/radio_construction"/>
-            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/music" android:id="@+id/radio_music"/>
-            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/crowd" android:id="@+id/radio_crowd"/>
-            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/production" android:id="@+id/radio_production"/>
-            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/somethingelse" android:id="@+id/radio_other"/>
-        </RadioGroup>
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp">
 
+            <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/transport" android:id="@+id/checkbox_transport"/>
+            <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/party" android:id="@+id/checkbox_party"/>
+            <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/construction" android:id="@+id/checkbox_construction"/>
+            <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/music" android:id="@+id/checkbox_music"/>
+            <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/crowd" android:id="@+id/checkbox_crowd"/>
+            <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/production" android:id="@+id/checkbox_production"/>
+            <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/somethingelse" android:id="@+id/checkbox_other"/>
+
+        </LinearLayout>
         <Button
             android:id="@+id/save_data_button"
             android:layout_width="match_parent"

@@ -1,7 +1,6 @@
 package com.maid.silentcity;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -33,20 +32,28 @@ public class RecordNoiseActivity extends AppCompatActivity {
     private static final int ACTIVITY_SELECT_CAUSE_REQUEST_CODE = 1;
     private static final String LOG_TAG = "NoiseRecorder";
 
+    // Інтервал для плавної візуалізації та збору статистики
+    private static final int VISUALIZATION_INTERVAL_MS = 50;
+    // НОВЕ: Інтервал для оновлення тексту дБ на екрані
+    private static final int DISPLAY_UPDATE_INTERVAL_MS = 1000;
+
     private MediaRecorder mRecorder = null;
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private FusedLocationProviderClient fusedLocationClient;
 
     private TextView timerText, dbLevelText;
+    private VisualizerView visualizerView;
 
     private int secondsElapsed = 0;
     private double maxNoise = 0.0;
     private double minNoise = 150.0;
-    private double totalNoise = 0.0;
-    private int readingsCount = 0;
+    private double totalDbSum = 0.0;
+    private int totalDbCount = 0;
+    private double currentDbLevel = 0.0; // Змінна для зберігання останнього виміру дБ
+
     private Location lastKnownLocation;
     private String tempFilePath;
-    private long recordingStartTime; // Змінна для зберігання часу початку запису
+    private long recordingStartTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +63,7 @@ public class RecordNoiseActivity extends AppCompatActivity {
         timerText = findViewById(R.id.timer_text);
         dbLevelText = findViewById(R.id.db_level_text);
         Button cancelButton = findViewById(R.id.cancel_record_button);
+        visualizerView = findViewById(R.id.visualizer_view);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -63,6 +71,8 @@ public class RecordNoiseActivity extends AppCompatActivity {
 
         checkPermissions();
     }
+
+    // ... (checkPermissions, onRequestPermissionsResult, getLocation залишаються незмінними) ...
 
     private void checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
@@ -122,8 +132,12 @@ public class RecordNoiseActivity extends AppCompatActivity {
         try {
             mRecorder.prepare();
             mRecorder.start();
-            recordingStartTime = System.currentTimeMillis(); // Збереження часу початку
+            recordingStartTime = System.currentTimeMillis();
+
+            // Запускаємо ТРИ Runnable: таймер (1с), вимірювання (50мс), оновлення дБ тексту (1с)
+            mHandler.post(timerRunnable);
             mHandler.post(measurementRunnable);
+            mHandler.post(updateDisplayRunnable); // НОВЕ: Запускаємо окреме оновлення тексту
         } catch (IOException e) {
             Log.e(LOG_TAG, "MediaRecorder failed", e);
             Toast.makeText(this, "Помилка мікрофона", Toast.LENGTH_SHORT).show();
@@ -131,40 +145,75 @@ public class RecordNoiseActivity extends AppCompatActivity {
         }
     }
 
-    private double getAmplitudeDb() {
+    private int getAmplitude() {
         if (mRecorder != null) {
-            int amplitude = mRecorder.getMaxAmplitude();
-            if (amplitude > 0) {
-                return 20 * Math.log10(amplitude);
-            }
+            return mRecorder.getMaxAmplitude();
+        }
+        return 0;
+    }
+
+    private double getAmplitudeDb(int amplitude) {
+        if (amplitude > 0) {
+            return 20 * Math.log10(amplitude / 1.0);
         }
         return 0.0;
     }
 
-    private Runnable measurementRunnable = new Runnable() {
+    // Runnable 1: Оновлення таймера (кожну секунду)
+    private Runnable timerRunnable = new Runnable() {
         @Override
         public void run() {
             if (secondsElapsed < RECORD_TIME_SECONDS) {
                 secondsElapsed++;
                 timerText.setText(String.format("Час: %d с / %d с", secondsElapsed, RECORD_TIME_SECONDS));
+                mHandler.postDelayed(this, 1000);
+            }
+        }
+    };
 
-                double currentDb = getAmplitudeDb();
+    // Runnable 2: Збір даних та Візуалізація (кожні 50 мс)
+    private Runnable measurementRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (secondsElapsed < RECORD_TIME_SECONDS) {
 
-                if (currentDb > 0) {
-                    maxNoise = Math.max(maxNoise, currentDb);
-                    minNoise = Math.min(minNoise, currentDb);
-                    totalNoise += currentDb;
-                    readingsCount++;
+                int rawAmplitude = getAmplitude();
+                double currentDb = getAmplitudeDb(rawAmplitude);
 
-                    dbLevelText.setText(String.format("Поточний рівень: %.1f дБ", currentDb));
+                // 1. Оновлення візуалізатора (завжди 50 мс для плавності)
+                if (visualizerView != null) {
+                    visualizerView.setAmplitude(rawAmplitude);
                 }
 
-                mHandler.postDelayed(this, 1000);
+                // 2. Збір статистики
+                if (currentDb > 0) {
+                    currentDbLevel = currentDb; // Зберігаємо останнє значення
+                    maxNoise = Math.max(maxNoise, currentDb);
+                    minNoise = Math.min(minNoise, currentDb);
+                    totalDbSum += currentDb;
+                    totalDbCount++;
+                }
+
+                mHandler.postDelayed(this, VISUALIZATION_INTERVAL_MS);
             } else {
+                // Якщо час вийшов, зупиняємо
                 stopMeasurement();
             }
         }
     };
+
+    // Runnable 3: Оновлення тексту дБ на екрані (кожну секунду)
+    private Runnable updateDisplayRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (secondsElapsed < RECORD_TIME_SECONDS) {
+                // ВИПРАВЛЕНО: Оновлюємо текст лише раз на секунду
+                dbLevelText.setText(String.format("Поточний рівень: %.1f дБ", currentDbLevel));
+                mHandler.postDelayed(this, DISPLAY_UPDATE_INTERVAL_MS);
+            }
+        }
+    };
+
 
     private void stopMeasurement() {
         // Зупинка MediaRecorder
@@ -177,22 +226,37 @@ public class RecordNoiseActivity extends AppCompatActivity {
             }
             mRecorder = null;
         }
-        new File(tempFilePath).delete();
+        // Видаляємо тимчасовий файл
+        File tempFile = new File(tempFilePath);
+        if (tempFile.exists()) {
+            tempFile.delete();
+        }
 
-        double avgNoise = readingsCount > 0 ? totalNoise / readingsCount : 0.0;
+        // Зупиняємо УСІ Runnable
+        mHandler.removeCallbacks(timerRunnable);
+        mHandler.removeCallbacks(measurementRunnable);
+        mHandler.removeCallbacks(updateDisplayRunnable);
 
-        if (readingsCount == 0) {
+
+        double avgNoise = totalDbCount > 0 ? totalDbSum / totalDbCount : 0.0;
+
+        if (totalDbCount == 0) {
             Toast.makeText(this, "Не вдалося виміряти шум. Спробуйте ще раз.", Toast.LENGTH_LONG).show();
             finishAndCancel();
             return;
         }
+
+        if (minNoise == 150.0) {
+            minNoise = avgNoise;
+        }
+
 
         // Перехід до активності вибору причини
         Intent intent = new Intent(RecordNoiseActivity.this, SelectCauseActivity.class);
         intent.putExtra("MAX_NOISE", String.format("%.1f", maxNoise));
         intent.putExtra("MIN_NOISE", String.format("%.1f", minNoise));
         intent.putExtra("AVG_NOISE", String.format("%.1f", avgNoise));
-        intent.putExtra("TIMESTAMP", recordingStartTime); // ПЕРЕДАЄМО ЧАС
+        intent.putExtra("TIMESTAMP", recordingStartTime);
 
         // Передача координат
         if (lastKnownLocation != null) {
@@ -207,15 +271,14 @@ public class RecordNoiseActivity extends AppCompatActivity {
         startActivityForResult(intent, ACTIVITY_SELECT_CAUSE_REQUEST_CODE);
     }
 
+    // ... (onActivityResult та finishAndCancel оновлено для видалення updateDisplayRunnable) ...
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ACTIVITY_SELECT_CAUSE_REQUEST_CODE) {
-            // Передаємо результат далі до MainActivity
             setResult(resultCode, data);
-
-            // Завершуємо RecordNoiseActivity
             finish();
         }
     }
@@ -228,7 +291,10 @@ public class RecordNoiseActivity extends AppCompatActivity {
             } catch (RuntimeException ignored) {}
             mRecorder = null;
         }
+        // Обов'язково видаляємо ВСІ Runnable
+        mHandler.removeCallbacks(timerRunnable);
         mHandler.removeCallbacks(measurementRunnable);
+        mHandler.removeCallbacks(updateDisplayRunnable); // ДОДАНО
 
         setResult(RESULT_CANCELED);
         finish();
