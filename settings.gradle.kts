@@ -9,6 +9,8 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        // *** ВИПРАВЛЕННЯ СИНТАКСИСУ НА KOTLIN DSL ***
+        maven { url = uri("https://jitpack.io") }
     }
 }
 dependencyResolutionManagement {
@@ -16,9 +18,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // *** ВИПРАВЛЕННЯ СИНТАКСИСУ НА KOTLIN DSL ***
+        maven { url = uri("https://jitpack.io") }
     }
 }
 
 rootProject.name = "SilentCity"
 include(":app")
- 

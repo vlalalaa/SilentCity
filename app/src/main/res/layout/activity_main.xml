@@ -17,6 +17,27 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/time_spinner_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_alignParentTop="true"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <Spinner
+                android:id="@+id/time_range_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:gravity="center"
+                android:background="@android:color/white"/>
+        </androidx.cardview.widget.CardView>
+
+
         <TextView
             android:id="@+id/noise_advice_textview"
             android:layout_width="match_parent"
@@ -29,24 +50,22 @@
             android:textStyle="bold"
             android:gravity="center"
             android:text="Завантаження даних про шум..."
-            android:layout_alignParentTop="true" />
+            android:layout_below="@id/time_spinner_card" /> <androidx.cardview.widget.CardView
+        android:id="@+id/map_card_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="2dp"
+        android:layout_marginTop="8dp"
+        android:layout_below="@id/noise_advice_textview"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/map_card_container"
+        <fragment
+            android:id="@+id/main_map_fragment"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="2dp"
-            android:layout_marginTop="8dp"
-            android:layout_below="@id/noise_advice_textview"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="8dp">
-
-            <fragment
-                android:id="@+id/main_map_fragment"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
-                android:layout_width="match_parent"
-                android:layout_height="440dp" />
-        </androidx.cardview.widget.CardView>
+            android:layout_height="440dp" />
+    </androidx.cardview.widget.CardView>
 
         <Button
             android:id="@+id/add_data_button"
